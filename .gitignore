@@ -1,0 +1,11 @@
+.DS_Store
+.idea/
+general/
+literature/
+venv/
+results/
+random/
+.ipynb_checkpoints
+__pycache__
+*.pyc
+*.ipynb
