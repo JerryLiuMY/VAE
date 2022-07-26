@@ -6,37 +6,77 @@ import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def train_vae(data_loader, input_size):
-    """ Training VAE with image dataset
-    :param data_loader: image dataset loader
+def train_vae(train_loader, input_size):
+    """ Training VAE with the specified image dataset
+    :param train_loader: training image dataset loader
     :param input_size: size of input image
-    :return:
     """
 
     # load parameters
     epoch, lr, beta = train_dict["epoch"], train_dict["lr"], train_dict["beta"]
 
     # building VAE
-    vae = VariationalAutoencoder(input_size)
-    vae = vae.to(device)
-    num_params = sum(p.numel() for p in vae.parameters() if p.requires_grad)
+    model = VariationalAutoencoder(input_size)
+    model = model.to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-5)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.8)
+    num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Number of parameters: {num_params}")
 
-    optimizer = torch.optim.AdamW(vae.parameters(), lr=lr, weight_decay=1e-5)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.8)
-
-    # set to training mode
-    vae.train()
+    # training loop
+    model.train()
+    train_loss = []
     for epoch in range(epoch):
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Training on epoch {epoch}")
-        for img_batch, _ in data_loader:
-            img_batch = img_batch.to(device)
-            ima_batch_recon, mu, logvar = vae(img_batch)
-            loss = vae_loss(ima_batch_recon, img_batch, mu, logvar, beta)
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Training on epoch {epoch}...")
+        epoch_loss, nbatch = 0., 0.
+
+        for train_batch, _ in train_loader:
+            train_batch = train_batch.to(device)
+            train_batch_recon, mu, logvar = model(train_batch)
+            loss = vae_loss(train_batch_recon, train_batch, mu, logvar, beta)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+
+            # update loss and nbatch
+            epoch_loss += loss.item()
+            nbatch += 1
+
         scheduler.step()
+
+        # append training loss
+        epoch_loss = epoch_loss / nbatch
+        train_loss.append(epoch_loss)
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Finish epoch {epoch} with loss {epoch_loss}")
+
+    return model, train_loss
+
+
+def valid_vae(model, valid_loader):
+    """ Training VAE with the specified image dataset
+    :param model: trained VAE model
+    :param valid_loader: validation image dataset loader
+    """
+
+    # load parameters
+    beta = train_dict["beta"]
+
+    # set to evaluation mode
+    model.eval()
+    valid_loss, nbatch = 0., 0.
+    for valid_batch, _ in valid_loader:
+        with torch.no_grad():
+            valid_batch = valid_batch.to(device)
+            valid_batch_recon, mu, logvar = model(valid_batch)
+            loss = vae_loss(valid_batch_recon, valid_batch, mu, logvar, beta)
+
+            # update loss and nbatch
+            valid_loss += loss.item()
+            nbatch += 1
+
+    # report validation loss
+    valid_loss = valid_loss / nbatch
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Finish validation with loss {valid_loss}")
 
 
 def vae_loss(x_recon, x, mu, logvar, beta):
@@ -46,7 +86,7 @@ def vae_loss(x_recon, x, mu, logvar, beta):
     :param mu: mean in the hidden layer
     :param logvar: log of the variance in the hidden layer
     :param beta: beta
-    :return: loss function
+    :return: reconstruction loss + KL
     """
 
     # reconstruction loss (dependent of image resolution)
