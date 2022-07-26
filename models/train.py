@@ -3,7 +3,7 @@ from torch.nn import functional as F
 from models.vae import VariationalAutoencoder
 from params.params import train_dict
 import torch
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+from global_settings import device
 
 
 def train_vae(train_loader, input_size):

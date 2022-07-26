@@ -1,5 +1,7 @@
+import torch
 from pathlib import Path
 import os
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 # define directories
