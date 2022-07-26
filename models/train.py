@@ -40,6 +40,15 @@ def train_vae(data_loader, input_size):
 
 
 def vae_loss(recon_x, x, mu, logvar, beta):
+    """ Calculating loss for variational autoencoder
+    :param recon_x: reconstructed image
+    :param x: original image
+    :param mu: mean in the hidden layer
+    :param logvar: log of the variance in the hidden layer
+    :param beta: beta
+    :return: loss function
+    """
+
     # reconstruction loss (dependent of image resolution)
     recon_loss = F.binary_cross_entropy(recon_x.view(-1, 784), x.view(-1, 784), reduction="sum")
 

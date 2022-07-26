@@ -36,7 +36,7 @@ class Block(nn.Module):
         self.stride = params_dict["stride"]
         self.padding = params_dict["padding"]
         self.dilation = params_dict["dilation"]
-        self.hidden = params_dict["latent"]
+        self.hidden = params_dict["hidden"]
         self.input_h, self.input_w = input_size
 
 
