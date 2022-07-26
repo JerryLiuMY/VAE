@@ -1,7 +1,7 @@
 import torch.nn.functional as F
+from datetime import datetime
 import torch.nn as nn
 import torch
-from datetime import datetime
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
@@ -14,7 +14,7 @@ def train_vae(input_data, params):
 
     # load parameters
     channel, latent_dim = params["channel"], params["latent_dim"]
-    epoch, lr = params["epoch"], params["lr"]
+    epoch, lr, beta = params["epoch"], params["lr"], params["beta"]
 
     # building VAE
     vae = VariationalAutoencoder(channel, latent_dim)
@@ -32,7 +32,7 @@ def train_vae(input_data, params):
         for img_batch, _ in input_data:
             img_batch = img_batch.to(device)
             ima_batch_recon, mu, logvar = vae(img_batch)
-            loss = vae_loss(ima_batch_recon, img_batch, mu, logvar, bate)
+            loss = vae_loss(ima_batch_recon, img_batch, mu, logvar, beta)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
