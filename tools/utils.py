@@ -14,6 +14,7 @@ def ignore_warnings(func):
 
 def iterable_wrapper(func):
     """ Wrap generator to be reusable """
+
     def inner(*args, **kwargs):
         return IterableWrapper(func, *args, **kwargs)
     return inner
@@ -21,6 +22,7 @@ def iterable_wrapper(func):
 
 class IterableWrapper:
     """ Wrap generator to be reusable """
+
     def __init__(self, func, *args, **kwargs):
         self.func, self.args, self.kwargs = func, args, kwargs
         self.generator = self.func(*self.args, **self.kwargs)
