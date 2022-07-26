@@ -39,9 +39,9 @@ def train_vae(data_loader, input_size):
         scheduler.step()
 
 
-def vae_loss(recon_x, x, mu, logvar, beta):
+def vae_loss(x_recon, x, mu, logvar, beta):
     """ Calculating loss for variational autoencoder
-    :param recon_x: reconstructed image
+    :param x_recon: reconstructed image
     :param x: original image
     :param mu: mean in the hidden layer
     :param logvar: log of the variance in the hidden layer
@@ -50,7 +50,7 @@ def vae_loss(recon_x, x, mu, logvar, beta):
     """
 
     # reconstruction loss (dependent of image resolution)
-    recon_loss = F.binary_cross_entropy(recon_x.view(-1, 784), x.view(-1, 784), reduction="sum")
+    recon_loss = F.binary_cross_entropy(x_recon.view(-1, 784), x.view(-1, 784), reduction="sum")
 
     # KL-divergence
     kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())

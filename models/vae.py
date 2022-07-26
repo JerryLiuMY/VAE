@@ -93,7 +93,7 @@ class Decoder(Block):
         x = self.fc(x)
 
         # unflatten to channels
-        x = x.view(x.size(0), self.c * 2, 7, 7)
+        x = x.view(x.size(0), self.c * 2, self.conv_h, self.conv_w)
 
         # convolution layers
         x = F.relu(self.conv2(x))
