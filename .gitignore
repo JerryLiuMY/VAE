@@ -5,6 +5,7 @@ literature/
 venv/
 results/
 random/
+__literature__/reference
 .ipynb_checkpoints
 __pycache__
 *.pyc
