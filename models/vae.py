@@ -55,7 +55,7 @@ class Encoder(nn.Module):
         self.conv_h, self.conv_w = get_conv_size(self.input_h), get_conv_size(self.input_w)
 
         # second convolutional layer
-        self.conv2 = nn.Conv2d(in_channels=self.channel, out_channels=self.channel*2, kernel_size=self.kernel_size,
+        self.conv2 = nn.Conv2d(in_channels=self.channel, out_channels=self.channel * 2, kernel_size=self.kernel_size,
                                stride=self.stride, padding=self.padding)
         self.conv_h, self.conv_w = get_conv_size(self.conv_h), get_conv_size(self.conv_w)
 
@@ -79,13 +79,19 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module, Encoder):
-    def __init__(self, channels, latent_dim):
+    def __init__(self, latent_dim):
         super(Decoder, self).__init__()
-        c = channels
-        self.c = channels
-        self.fc = nn.Linear(in_features=latent_dim, out_features=c * 2 * self.conv_h * self.conv_w)
-        self.conv2 = nn.ConvTranspose2d(in_channels=c * 2, out_channels=c, kernel_size=4, stride=2, padding=1)
-        self.conv1 = nn.ConvTranspose2d(in_channels=c, out_channels=1, kernel_size=4, stride=2, padding=1)
+
+        # linear layer
+        self.fc = nn.Linear(in_features=latent_dim, out_features=self.channel * 2 * self.conv_h * self.conv_w)
+
+        # first convolutional layer
+        self.conv2 = nn.ConvTranspose2d(in_channels=self.channel * 2, out_channels=self.channel,
+                                        kernel_size=self.kernel_size, stride=self.stride, padding=self.padding)
+
+        # second convolutional layer
+        self.conv1 = nn.ConvTranspose2d(in_channels=self.channel, out_channels=self.channel,
+                                        kernel_size=self.kernel_size, stride=self.stride, padding=self.padding)
 
     def forward(self, x):
         # linear layer
