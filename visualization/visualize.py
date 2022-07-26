@@ -1,12 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import torchvision.utils
-import torch
 from global_settings import device
+import torch
 plt.ion()
 
 
-def visualise_output(images, model):
+def visualise_output(model, images):
 
     # original images
     show_image(torchvision.utils.make_grid(images[1:50], 10, 5))
