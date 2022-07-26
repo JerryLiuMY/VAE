@@ -2,13 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torchvision.utils
 from global_settings import device
-import torch
 from tools.utils import to_img
-
+import torch
 plt.ion()
 
 
 def visualise_output(model, images):
+    """ Visualize original and reconstructed images
+    :param model:
+    :param images:
+    :return:
+    """
 
     # original images
     show_image(torchvision.utils.make_grid(images[1:50], 10, 5))
