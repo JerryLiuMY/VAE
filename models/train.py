@@ -49,7 +49,8 @@ def train_vae(train_loader, input_shape):
         epoch_loss = epoch_loss / nbatch
         train_loss.append(epoch_loss)
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Finish epoch {epoch} with loss {epoch_loss}")
-        train_loss = np.array(train_loss)
+
+    train_loss = np.array(train_loss)
 
     return model, train_loss
 
