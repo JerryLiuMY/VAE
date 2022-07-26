@@ -7,17 +7,17 @@ import torch
 import numpy as np
 
 
-def train_vae(train_loader, input_size):
+def train_vae(train_loader, input_shape):
     """ Training VAE with the specified image dataset
     :param train_loader: training image dataset loader
-    :param input_size: size of input image
+    :param input_shape: size of input image
     """
 
     # load parameters
     epoch, lr, beta = train_dict["epoch"], train_dict["lr"], train_dict["beta"]
 
     # building VAE
-    model = VariationalAutoencoder(input_size)
+    model = VariationalAutoencoder(input_shape)
     model = model.to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.8)

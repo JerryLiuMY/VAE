@@ -6,17 +6,17 @@ import torch
 
 
 class VariationalAutoencoder(nn.Module):
-    def __init__(self, input_size):
+    def __init__(self, input_shape):
         super(VariationalAutoencoder, self).__init__()
-        self.encoder = Encoder(input_size)
-        self.decoder = Decoder(input_size)
+        self.encoder = Encoder(input_shape)
+        self.decoder = Decoder(input_shape)
 
     def forward(self, x):
-        latent_mu, latent_logvar = self.encoder(x)
-        latent = self.latent_sample(latent_mu, latent_logvar)
+        mu, logvar = self.encoder(x)
+        latent = self.latent_sample(mu, logvar)
         x_recon = self.decoder(latent)
 
-        return x_recon, latent_mu, latent_logvar
+        return x_recon, mu, logvar
 
     def latent_sample(self, mu, logvar):
         # the re-parameterization trick
@@ -29,7 +29,7 @@ class VariationalAutoencoder(nn.Module):
 
 
 class Block(nn.Module):
-    def __init__(self, input_size):
+    def __init__(self, input_shape):
         super(Block, self).__init__()
         self.channel = params_dict["channel"]
         self.kernel_size = params_dict["kernel_size"]
@@ -37,12 +37,12 @@ class Block(nn.Module):
         self.padding = params_dict["padding"]
         self.dilation = params_dict["dilation"]
         self.hidden = params_dict["hidden"]
-        self.input_h, self.input_w = input_size
+        self.input_h, self.input_w = input_shape
 
 
 class Encoder(Block):
-    def __init__(self, input_size):
-        super(Encoder, self).__init__(input_size)
+    def __init__(self, input_shape):
+        super(Encoder, self).__init__(input_shape)
 
         # first convolutional layer
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=self.channel, kernel_size=self.kernel_size,
@@ -74,11 +74,11 @@ class Encoder(Block):
 
 
 class Decoder(Block):
-    def __init__(self, input_size):
-        super(Decoder, self).__init__(input_size)
+    def __init__(self, input_shape):
+        super(Decoder, self).__init__(input_shape)
 
         # linear layer
-        self.fc = nn.Linear(in_features=self.latent, out_features=self.channel * 2 * self.conv_h * self.conv_w)
+        self.fc = nn.Linear(in_features=self.hidden, out_features=self.channel * 2 * self.conv_h * self.conv_w)
 
         # first convolutional layer
         self.conv2 = nn.ConvTranspose2d(in_channels=self.channel * 2, out_channels=self.channel,

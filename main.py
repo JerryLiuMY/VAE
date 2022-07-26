@@ -14,8 +14,8 @@ def experiment(dataset):
     """
 
     # load data and perform training
-    train_loader, valid_loader, input_size = load_data(dataset)
-    model, train_loss = train_vae(train_loader, input_size)
+    train_loader, valid_loader, input_shape = load_data(dataset)
+    model, train_loss = train_vae(train_loader, input_shape)
     valid_loss = valid_vae(model, valid_loader)
 
     # save model and loss
