@@ -14,7 +14,7 @@ from loader.loader import load_data
 from models.train import train_vae
 from models.train import valid_vae
 
-# load data and perform training
+# load data and perform training & validation
 dataset = "mnist"
 train_loader, valid_loader, input_shape = load_data(dataset)
 model, train_loss = train_vae(train_loader, input_shape)
