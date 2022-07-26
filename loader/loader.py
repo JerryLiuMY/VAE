@@ -14,6 +14,6 @@ def load_mnist(dataset_name):
     img_transform = transforms.Compose([transforms.ToTensor()])
     data = load_func(DATA_PATH, download=True, train=True, transform=img_transform)
     data_loader = DataLoader(data, batch_size=batch_size, shuffle=True)
-    data_size = (data[0][0][1], data[0][0][2])
+    input_size = (data[0][0][1], data[0][0][2])
 
-    return data_loader, data_size
+    return data_loader, input_size

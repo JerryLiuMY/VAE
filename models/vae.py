@@ -11,7 +11,6 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def train_vae(input_data):
     """ Training VAE with image dataset
     :param input_data: input image dataset
-    :param params: parameters
     :return:
     """
 
@@ -42,14 +41,15 @@ def train_vae(input_data):
 
 
 class Encoder(nn.Module):
-    def __init__(self):
+    def __init__(self, input_size):
         super(Encoder, self).__init__()
         self.channel = params_dict["channel"]
         self.kernel_size = params_dict["kernel_size"]
         self.stride = params_dict["stride"]
         self.padding = params_dict["padding"]
         self.dilation = params_dict["dilation"]
-        self.latent = params_dict["latent"]
+        self.hidden = params_dict["latent"]
+        self.input_h, self.input_w = input_size
 
         # first convolutional layer
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=self.channel, kernel_size=self.kernel_size,
@@ -62,8 +62,8 @@ class Encoder(nn.Module):
         self.conv_h, self.conv_w = get_conv_size(self.conv_h), get_conv_size(self.conv_w)
 
         # map to mu and variance
-        self.fc_mu = nn.Linear(in_features=self.channel * 2 * self.conv_h * self.conv_w, out_features=self.latent)
-        self.fc_logvar = nn.Linear(in_features=self.channel * 2 * self.conv_h * self.conv_w, out_features=self.latent)
+        self.fc_mu = nn.Linear(in_features=self.channel * 2 * self.conv_h * self.conv_w, out_features=self.hidden)
+        self.fc_logvar = nn.Linear(in_features=self.channel * 2 * self.conv_h * self.conv_w, out_features=self.hidden)
 
     def forward(self, x):
         # convolution layers
@@ -81,11 +81,11 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module, Encoder):
-    def __init__(self, latent_dim):
+    def __init__(self):
         super(Decoder, self).__init__()
 
         # linear layer
-        self.fc = nn.Linear(in_features=latent_dim, out_features=self.channel * 2 * self.conv_h * self.conv_w)
+        self.fc = nn.Linear(in_features=self.latent, out_features=self.channel * 2 * self.conv_h * self.conv_w)
 
         # first convolutional layer
         self.conv2 = nn.ConvTranspose2d(in_channels=self.channel * 2, out_channels=self.channel,
