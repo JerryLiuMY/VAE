@@ -1,8 +1,8 @@
-from datetime import datetime
 from torch.nn import functional as F
 from models.vae import VariationalAutoencoder
 from params.params import train_dict
 from global_settings import device
+from datetime import datetime
 import torch
 import numpy as np
 
