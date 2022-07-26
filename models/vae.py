@@ -1,5 +1,7 @@
 import torch.nn.functional as F
 from datetime import datetime
+from params.params import get_conv_size
+from params.params import params_dict
 import torch.nn as nn
 import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -40,14 +42,26 @@ def train_vae(input_data, params):
 
 
 class Encoder(nn.Module):
-    def __init__(self, channel, latent_dim):
+    def __init__(self, latent_dim):
         super(Encoder, self).__init__()
-        c = channel
-        self.c = channel
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=c, kernel_size=4, stride=2, padding=1)  # out: c x 14 x 14
-        self.conv2 = nn.Conv2d(in_channels=c, out_channels=c * 2, kernel_size=4, stride=2, padding=1)  # out: c x 7 x 7
-        self.fc_mu = nn.Linear(in_features=c * 2 * 7 * 7, out_features=latent_dim)
-        self.fc_logvar = nn.Linear(in_features=c * 2 * 7 * 7, out_features=latent_dim)
+        self.channel = params_dict["channel"]
+        self.kernel_size = params_dict["kernel_size"]
+        self.stride = params_dict["stride"]
+        self.padding = params_dict["padding"]
+
+        # first convolutional layer
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=self.channel, kernel_size=self.kernel_size,
+                               stride=self.stride, padding=self.padding)
+        self.conv_h, self.conv_w = get_conv_size(self.input_h), get_conv_size(self.input_w)
+
+        # second convolutional layer
+        self.conv2 = nn.Conv2d(in_channels=self.channel, out_channels=self.channel*2, kernel_size=self.kernel_size,
+                               stride=self.stride, padding=self.padding)
+        self.conv_h, self.conv_w = get_conv_size(self.conv_h), get_conv_size(self.conv_w)
+
+        # map to mu and variance
+        self.fc_mu = nn.Linear(in_features=self.channel * 2 * self.conv_h * self.conv_w, out_features=latent_dim)
+        self.fc_logvar = nn.Linear(in_features=self.channel * 2 * self.conv_h * self.conv_w, out_features=latent_dim)
 
     def forward(self, x):
         # convolution layers
@@ -64,12 +78,12 @@ class Encoder(nn.Module):
         return x_mu, x_logvar
 
 
-class Decoder(nn.Module):
+class Decoder(nn.Module, Encoder):
     def __init__(self, channels, latent_dim):
         super(Decoder, self).__init__()
         c = channels
         self.c = channels
-        self.fc = nn.Linear(in_features=latent_dim, out_features=c * 2 * 7 * 7)
+        self.fc = nn.Linear(in_features=latent_dim, out_features=c * 2 * self.conv_h * self.conv_w)
         self.conv2 = nn.ConvTranspose2d(in_channels=c * 2, out_channels=c, kernel_size=4, stride=2, padding=1)
         self.conv1 = nn.ConvTranspose2d(in_channels=c, out_channels=1, kernel_size=4, stride=2, padding=1)
 
