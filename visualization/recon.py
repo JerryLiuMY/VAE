@@ -1,7 +1,6 @@
 import torchvision.utils
 import matplotlib.pyplot as plt
 from global_settings import device
-from tools.utils import to_img
 from global_settings import OUTPUT_PATH
 import numpy as np
 import os
@@ -16,7 +15,7 @@ def plot_recon(model, image_set):
     """
 
     # original images
-    image_org = to_img(image_set)
+    image_org = image_set.clamp(0, 1)
     image_org = torchvision.utils.make_grid(image_org[0:50], 10, 5).numpy()
     image_org = np.transpose(image_org, (1, 2, 0))
 
@@ -26,7 +25,7 @@ def plot_recon(model, image_set):
         image_rec = image_set.to(device)
         image_rec, _, _ = model(image_rec)
         image_rec = image_rec.cpu()
-        image_rec = to_img(image_rec)
+        image_rec = image_rec.clamp(0, 1)
         image_rec = torchvision.utils.make_grid(image_rec[0:50], 10, 5).numpy()
         image_rec = np.transpose(image_rec, (1, 2, 0))
 

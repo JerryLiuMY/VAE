@@ -9,7 +9,7 @@ from datetime import datetime
 def load_data(dataset):
     """ Load data from the specified dataset as data loader
     :param dataset: dataset name
-    :return: dataset loader and input size
+    :return: dataset loader and input shape
     """
 
     if dataset == "mnist":

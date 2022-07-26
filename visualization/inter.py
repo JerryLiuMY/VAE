@@ -3,7 +3,6 @@ import numpy as np
 import torch
 from matplotlib import pyplot as plt
 from global_settings import OUTPUT_PATH, device
-from tools.utils import to_img
 
 
 def plot_inter(model, digit_set, d1, d2):
@@ -22,7 +21,7 @@ def plot_inter(model, digit_set, d1, d2):
 
     for idx, lbd in enumerate(lambda_lin):
         inter_image = interpolation(model, float(lbd), digit_set[d1][0], digit_set[d2][0])
-        inter_image = to_img(inter_image)
+        inter_image = inter_image.clamp(0, 1)
         axes[idx].imshow(inter_image[0, 0, :, :], cmap="gray")
         axes[idx].set_title("lambda_val=" + str(round(lbd, 1)))
 
