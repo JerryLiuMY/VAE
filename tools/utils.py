@@ -3,5 +3,7 @@ def to_img(x):
     :param x: reconstructed image
     :return:
     """
+
     x = x.clamp(0, 1)
+
     return x

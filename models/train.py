@@ -11,6 +11,7 @@ def train_vae(train_loader, input_shape):
     """ Training VAE with the specified image dataset
     :param train_loader: training image dataset loader
     :param input_shape: size of input image
+    :return: trained model and training loss history
     """
 
     # load parameters
@@ -59,6 +60,7 @@ def valid_vae(model, valid_loader):
     """ Training VAE with the specified image dataset
     :param model: trained VAE model
     :param valid_loader: validation image dataset loader
+    :return: validation loss
     """
 
     # load parameters

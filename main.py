@@ -9,8 +9,7 @@ import os
 
 def experiment(dataset):
     """ Perform experiment on the dataset
-    :param dataset:
-    :return:
+    :param dataset: dataset name
     """
 
     # load data and perform training
