@@ -2,12 +2,13 @@ import torch.nn.functional as F
 from datetime import datetime
 from params.params import get_conv_size
 from params.params import params_dict
+from params.params import train_dict
 import torch.nn as nn
 import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def train_vae(input_data, params):
+def train_vae(input_data):
     """ Training VAE with image dataset
     :param input_data: input image dataset
     :param params: parameters
@@ -15,11 +16,10 @@ def train_vae(input_data, params):
     """
 
     # load parameters
-    channel, latent_dim = params["channel"], params["latent_dim"]
-    epoch, lr, beta = params["epoch"], params["lr"], params["beta"]
+    epoch, lr, beta = train_dict["epoch"], train_dict["lr"], train_dict["beta"]
 
     # building VAE
-    vae = VariationalAutoencoder(channel, latent_dim)
+    vae = VariationalAutoencoder()
     vae = vae.to(device)
     num_params = sum(p.numel() for p in vae.parameters() if p.requires_grad)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Number of parameters: {num_params}")
@@ -42,12 +42,14 @@ def train_vae(input_data, params):
 
 
 class Encoder(nn.Module):
-    def __init__(self, latent_dim):
+    def __init__(self):
         super(Encoder, self).__init__()
         self.channel = params_dict["channel"]
         self.kernel_size = params_dict["kernel_size"]
         self.stride = params_dict["stride"]
         self.padding = params_dict["padding"]
+        self.dilation = params_dict["dilation"]
+        self.latent = params_dict["latent"]
 
         # first convolutional layer
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=self.channel, kernel_size=self.kernel_size,
@@ -60,8 +62,8 @@ class Encoder(nn.Module):
         self.conv_h, self.conv_w = get_conv_size(self.conv_h), get_conv_size(self.conv_w)
 
         # map to mu and variance
-        self.fc_mu = nn.Linear(in_features=self.channel * 2 * self.conv_h * self.conv_w, out_features=latent_dim)
-        self.fc_logvar = nn.Linear(in_features=self.channel * 2 * self.conv_h * self.conv_w, out_features=latent_dim)
+        self.fc_mu = nn.Linear(in_features=self.channel * 2 * self.conv_h * self.conv_w, out_features=self.latent)
+        self.fc_logvar = nn.Linear(in_features=self.channel * 2 * self.conv_h * self.conv_w, out_features=self.latent)
 
     def forward(self, x):
         # convolution layers
@@ -108,10 +110,10 @@ class Decoder(nn.Module, Encoder):
 
 
 class VariationalAutoencoder(nn.Module):
-    def __init__(self, capacity, latent_dims):
+    def __init__(self):
         super(VariationalAutoencoder, self).__init__()
-        self.encoder = Encoder(capacity, latent_dims)
-        self.decoder = Decoder(capacity, latent_dims)
+        self.encoder = Encoder()
+        self.decoder = Decoder()
 
     def forward(self, x):
         latent_mu, latent_logvar = self.encoder(x)
