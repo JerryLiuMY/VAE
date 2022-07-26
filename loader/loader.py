@@ -32,7 +32,7 @@ def load_data(dataset):
 def sort_digits(data_loader):
     """ Group tensor by digits label
     :param data_loader: data loader
-    :return: list of tensors grouped by digits label
+    :return: list of image tensors grouped by digits label
     """
 
     digits = [[] for _ in range(10)]

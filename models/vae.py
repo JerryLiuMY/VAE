@@ -14,9 +14,9 @@ class VariationalAutoencoder(nn.Module):
     def forward(self, x):
         mu, logvar = self.encoder(x)
         latent = self.latent_sample(mu, logvar)
-        x_recon = self.decoder(latent)
+        x_rec = self.decoder(latent)
 
-        return x_recon, mu, logvar
+        return x_rec, mu, logvar
 
     def latent_sample(self, mu, logvar):
         # the re-parameterization trick
@@ -67,10 +67,10 @@ class Encoder(Block):
         x = x.view(x.size(0), -1)
 
         # calculate mu & logvar
-        x_mu = self.fc_mu(x)
-        x_logvar = self.fc_logvar(x)
+        mu = self.fc_mu(x)
+        logvar = self.fc_logvar(x)
 
-        return x_mu, x_logvar
+        return mu, logvar
 
 
 class Decoder(Encoder, Block):
