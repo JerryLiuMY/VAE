@@ -45,7 +45,7 @@ def visualize(dataset):
     image_set, labels = next(iter(valid_loader))
 
     # plot visualizations
-    visual_path = os.path.join(OUTPUT_PATH, "visual")
+    visual_path = os.path.join(OUTPUT_PATH, "visualizations")
     if not os.path.isdir(visual_path):
         os.mkdir(visual_path)
 

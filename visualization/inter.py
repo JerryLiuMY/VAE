@@ -26,7 +26,7 @@ def plot_inter(model, digit_set, d1, d2):
         axes[idx].imshow(inter_image[0, 0, :, :], cmap="gray")
         axes[idx].set_title("lambda_val=" + str(round(lbd, 1)))
 
-    visual_path = os.path.join(OUTPUT_PATH, "visual")
+    visual_path = os.path.join(OUTPUT_PATH, "visualizations")
     fig.savefig(os.path.join(visual_path, "interpolation.pdf"), bbox_inches="tight")
 
 

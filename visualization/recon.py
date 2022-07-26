@@ -34,5 +34,5 @@ def plot_recon(model, image_set):
     fig, axes = plt.subplots(2, 1, figsize=(12, 10))
     axes[0].imshow(image_org)
     axes[1].imshow(image_rec)
-    visual_path = os.path.join(OUTPUT_PATH, "visual")
+    visual_path = os.path.join(OUTPUT_PATH, "visualizations")
     fig.savefig(os.path.join(visual_path, "recon.pdf"), bbox_inches="tight")

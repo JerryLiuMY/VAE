@@ -37,5 +37,5 @@ def plot_space(model):
 
     fig, ax = plt.subplots(figsize=(5, 5))
     ax.imshow(image_spc)
-    visual_path = os.path.join(OUTPUT_PATH, "visual")
+    visual_path = os.path.join(OUTPUT_PATH, "visualizations")
     fig.savefig(os.path.join(visual_path, "space.pdf"), bbox_inches="tight")

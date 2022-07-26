@@ -26,5 +26,5 @@ def plot_sample(model):
     # reconstructed images
     fig, ax = plt.subplots(figsize=(5, 5))
     ax.imshow(image_smp)
-    visual_path = os.path.join(OUTPUT_PATH, "visual")
+    visual_path = os.path.join(OUTPUT_PATH, "visualizations")
     fig.savefig(os.path.join(visual_path, "sample.pdf"), bbox_inches="tight")
