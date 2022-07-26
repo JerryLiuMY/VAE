@@ -9,7 +9,6 @@
 
 Dictionary of parameters: https://github.com/JerryLiuMY/VAE/blob/main/params/params.py
 
-
 ### Reconstructions
 Reconstruct new digits from the original digits.
 ![alt text](./__resources__/recon.jpg?raw=true "Title")

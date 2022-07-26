@@ -13,4 +13,11 @@ if DESKTOP_PATH == "/Users/mingyu/Desktop":
 else:
     DATA_PATH = os.path.join(DESKTOP_PATH, "data")
     OUTPUT_PATH = os.path.join(DESKTOP_PATH, "output")
-LOG_PATH = os.path.join(OUTPUT_PATH, "log")
+
+
+# make directories
+if not os.path.isdir(DATA_PATH):
+    os.mkdir(DATA_PATH)
+
+if not os.path.isdir(OUTPUT_PATH):
+    os.mkdir(OUTPUT_PATH)
