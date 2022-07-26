@@ -2,8 +2,9 @@ from datetime import datetime
 from torch.nn import functional as F
 from models.vae import VariationalAutoencoder
 from params.params import train_dict
-import torch
 from global_settings import device
+import torch
+import numpy as np
 
 
 def train_vae(train_loader, input_size):
@@ -48,6 +49,7 @@ def train_vae(train_loader, input_size):
         epoch_loss = epoch_loss / nbatch
         train_loss.append(epoch_loss)
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Finish epoch {epoch} with loss {epoch_loss}")
+        train_loss = np.array(train_loss)
 
     return model, train_loss
 
@@ -77,6 +79,8 @@ def valid_vae(model, valid_loader):
     # report validation loss
     valid_loss = valid_loss / nbatch
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Finish validation with loss {valid_loss}")
+
+    return valid_loss
 
 
 def vae_loss(x_recon, x, mu, logvar, beta):
