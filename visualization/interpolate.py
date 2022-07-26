@@ -7,19 +7,6 @@ import torch
 plt.ion()
 
 
-def sample(model):
-    model.eval()
-    with torch.no_grad():
-        # sample latent from normal
-        hidden = params_dict["hidden"]
-        latent = torch.randn(128, hidden, device=device)
-
-        # build reconstruction
-        image_sample = model.decoder(latent).cpu()
-
-        return image_sample
-
-
 def show_space(model):
 
     hidden = params_dict["hidden"]

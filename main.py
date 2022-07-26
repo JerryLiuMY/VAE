@@ -2,7 +2,7 @@ from loader.loader import load_data
 from models.train import train_vae
 from models.train import valid_vae
 from global_settings import OUTPUT_PATH
-from visualization.visualize import plot_output
+from visualization.visualize import plot_vae, plot_sample
 import numpy as np
 import torch
 import os
@@ -41,10 +41,13 @@ def visualize(dataset):
 
     # plot visualizations
     visual_path = os.path.join(OUTPUT_PATH, "visual")
-    plot_output(model, images)
+    if not os.path.isdir(visual_path):
+        os.mkdir(visual_path)
 
-    pass
+    plot_vae(model, images)
+    plot_sample(model)
 
 
 if __name__ == "__main__":
-    experiment("mnist")
+    # experiment("mnist")
+    visualize("mnist")
