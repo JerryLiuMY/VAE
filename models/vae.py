@@ -3,7 +3,6 @@ from params.params import get_conv_size
 from params.params import params_dict
 import torch.nn as nn
 import torch
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 class VariationalAutoencoder(nn.Module):

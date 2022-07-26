@@ -1,8 +1,9 @@
 from datetime import datetime
-import torch
 from torch.nn import functional as F
-from models.vae import VariationalAutoencoder, device
+from models.vae import VariationalAutoencoder
 from params.params import train_dict
+import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 def train_vae(data_loader, input_size):

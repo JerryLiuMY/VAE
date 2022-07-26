@@ -5,8 +5,8 @@ from torch.utils.data import DataLoader
 from params.params import batch_size
 
 
-def load_data(dataset_name):
-    if dataset_name == "mnist":
+def load_data(dataset):
+    if dataset == "mnist":
         load_func = datasets.MNIST
     else:
         raise ValueError("Invalid dataset name")
