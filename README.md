@@ -27,9 +27,11 @@ from visualization.sample import plot_sample
 from visualization.space import plot_space
 from visualization.inter import plot_inter
 
+# create sample images
 digit_set = sort_digits(valid_loader)
 image_set, labels = next(iter(valid_loader))
 
+# plot various visualizations
 plot_recon(model, image_set)
 plot_inter(model, digit_set, d1=3, d2=9)
 plot_sample(model)
