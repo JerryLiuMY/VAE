@@ -1,0 +1,39 @@
+---
+title: "Notes"
+author: "Mingyu Liu"
+date: "2021/12/01"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\subsection{Deep latent Gaussian models (DLGMs)}
+A general class of deep directed graphical models that consist of Gaussian latent variables at each layer of a processing hierarchy. Descend through the hierarchy and generate observations $\mathbf{v}$ by sampling from the observation likelihood using the activation of the lowest layer $\mathbf{h}_{1}$.
+$$
+\begin{aligned}
+\boldsymbol{\xi}_{l} & \sim \mathcal{N}\left(\boldsymbol{\xi}_{l} \mid \mathbf{0}, \mathbf{I}\right), \quad l=1, \ldots, L \\
+\mathbf{h}_{L} &=\mathbf{G}_{L} \boldsymbol{\xi}_{L} \\
+\mathbf{h}_{l} &=T_{l}\left(\mathbf{h}_{l+1}\right)+\mathbf{G}_{l} \boldsymbol{\xi}_{l}, \quad l=1 \ldots L-1 \\
+\mathbf{v} & \sim \pi\left(\mathbf{v} \mid T_{0}\left(\mathbf{h}_{1}\right)\right),
+\end{aligned}
+$$
+where $\boldsymbol{\xi}_{l}$ are mutually independent Gaussian variables. The transformations $T_{l}$ represent multi-layer perceptrons (MLPs) and $\mathbf{G}_{l}$ are matrices. At the visible layer, the data is generated from any appropriate distribution $\pi(\mathbf{v} \mid \cdot)$ whose parameters are specified by a transformation of the first latent layer. The maps $T_{l}$ and the matrices $G_{l}$ are parametrized by $\boldsymbol{\theta}^{g}$ (weak Gaussian prior over $p\left(\boldsymbol{\theta}^{g}\right)=\mathcal{N}(\boldsymbol{\theta} \mid \mathbf{0}, \kappa \mathbf{I})$). The joint probability distribution is 
+$$
+p(\mathbf{v}, \mathbf{h})=p\left(\mathbf{v} \mid \mathbf{h}_{1}, \boldsymbol{\theta}^{g}\right) p\left(\mathbf{h}_{L} \mid \boldsymbol{\theta}^{g}\right) p\left(\boldsymbol{\theta}^{g}\right) \prod_{l=1}^{L-1} p_{l}\left(\mathbf{h}_{l} \mid \mathbf{h}_{l+1}, \boldsymbol{\theta}^{g}\right)
+$$
+This specification for deep latent Gaussian models (DLGMs) generalises: 
+- *Factor analysis:* with only one layer of latent variables and use a linear mapping $T(\cdot)$
+- *Non-linear Gaussian belief network:* with the mappings are of the form $T_{l}(\mathbf{h})=\mathbf{A}_{l} f(\mathbf{h})+\mathbf{b}_{l}$
+
+Given this specification, our key task is to develop a method for tractable inference. A number of approaches are known and widely used a) mean-field variational EM b) the wake-sleep algorithm c) stochastic variational methods and d) related control-variate estimators. 
+
+\subsection{Stochastic Backpropagation}
+Gradient descent methods in latent variable models typically require computations of the form $\nabla_{\theta} \mathbb{E}_{q_{\theta}}[f(\boldsymbol{\xi})]$ where the expectation is taken with respect to a distribution $q_{\theta}(\cdot)$ with parameters $\boldsymbol{\theta}$, and $f$ is a loss function that we assume to be integrable and smooth. This quantity is difficult to compute directly since a) the expectation is unknown for most problems and b) there is an indirect dependency on the parameters of $q$ over which the expectation is taken.
+
