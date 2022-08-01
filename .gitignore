@@ -1,12 +1,7 @@
 .DS_Store
 .idea/
-general/
-literature/
-venv/
-results/
-random/
-__literature__/reference
 .ipynb_checkpoints
 __pycache__
 *.pyc
 *.ipynb
+__reference__/reference
