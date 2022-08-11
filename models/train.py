@@ -97,9 +97,12 @@ def vae_loss(x_recon, x, mu, logvar, beta):
     """
 
     # reconstruction loss (dependent of image resolution)
-    recon_loss = F.binary_cross_entropy(x_recon.view(-1, 784), x.view(-1, 784), reduction="sum")
+    recon_loss = - F.binary_cross_entropy(x_recon.view(-1, 784), x.view(-1, 784), reduction="sum")
 
     # KL-divergence
-    kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
+    kl_div = - 0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
-    return recon_loss + beta * kl_div
+    # define loss
+    loss = - beta * kl_div + recon_loss
+
+    return -loss
