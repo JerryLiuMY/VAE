@@ -32,10 +32,10 @@ def train_vae(train_loader, input_shape):
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Training on epoch {epoch}...")
         epoch_loss, nbatch = 0., 0.
 
-        for train_batch, _ in train_loader:
-            train_batch = train_batch.to(device)
-            train_batch_recon, mu, logvar = model(train_batch)
-            loss = elbo_binary(train_batch_recon, train_batch, mu, logvar, beta)
+        for x_batch, _ in train_loader:
+            x_batch = x_batch.to(device)
+            recon_batch, mu_batch, logvar_batch = model(x_batch)
+            loss = elbo_binary(x_batch, recon_batch, mu_batch, logvar_batch, beta)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -69,11 +69,11 @@ def valid_vae(model, valid_loader):
     # set to evaluation mode
     model.eval()
     valid_loss, nbatch = 0., 0.
-    for valid_batch, _ in valid_loader:
+    for x_batch, _ in valid_loader:
         with torch.no_grad():
-            valid_batch = valid_batch.to(device)
-            valid_batch_recon, mu, logvar = model(valid_batch)
-            loss = elbo_binary(valid_batch_recon, valid_batch, mu, logvar, beta)
+            x_batch = x_batch.to(device)
+            recon_batch, mu_batch, logvar_batch = model(x_batch)
+            loss = elbo_binary(x_batch, recon_batch, mu_batch, logvar_batch, beta)
 
             # update loss and nbatch
             valid_loss += loss.item()
@@ -86,9 +86,9 @@ def valid_vae(model, valid_loader):
     return valid_loss
 
 
-def elbo_binary(x_recon, x, mu, logvar, beta):
+def elbo_binary(x, recon, mu, logvar, beta):
     """ Calculating loss for variational autoencoder
-    :param x_recon: reconstructed image
+    :param recon: reconstructed image
     :param x: original image
     :param mu: mean in the hidden layer
     :param logvar: log of the variance in the hidden layer
@@ -100,7 +100,7 @@ def elbo_binary(x_recon, x, mu, logvar, beta):
     kl_div = - 0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
     # reconstruction loss (dependent of image resolution)
-    recon_loss = - F.binary_cross_entropy(x_recon.view(-1, 784), x.view(-1, 784), reduction="sum")
+    recon_loss = - F.binary_cross_entropy(recon.view(-1, 784), x.view(-1, 784), reduction="sum")
 
     # define loss
     loss = - beta * kl_div + recon_loss
