@@ -35,7 +35,7 @@ def train_vae(train_loader, input_shape):
         for train_batch, _ in train_loader:
             train_batch = train_batch.to(device)
             train_batch_recon, mu, logvar = model(train_batch)
-            loss = vae_loss(train_batch_recon, train_batch, mu, logvar, beta)
+            loss = elbo_binary(train_batch_recon, train_batch, mu, logvar, beta)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -73,7 +73,7 @@ def valid_vae(model, valid_loader):
         with torch.no_grad():
             valid_batch = valid_batch.to(device)
             valid_batch_recon, mu, logvar = model(valid_batch)
-            loss = vae_loss(valid_batch_recon, valid_batch, mu, logvar, beta)
+            loss = elbo_binary(valid_batch_recon, valid_batch, mu, logvar, beta)
 
             # update loss and nbatch
             valid_loss += loss.item()
@@ -86,7 +86,7 @@ def valid_vae(model, valid_loader):
     return valid_loss
 
 
-def vae_loss(x_recon, x, mu, logvar, beta):
+def elbo_binary(x_recon, x, mu, logvar, beta):
     """ Calculating loss for variational autoencoder
     :param x_recon: reconstructed image
     :param x: original image
