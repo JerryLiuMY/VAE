@@ -1,6 +1,5 @@
 from loader.loader import load_data
 from models.train import train_vae
-from models.train import valid_vae
 from global_settings import OUTPUT_PATH
 from visualization.recon import plot_recon
 from visualization.sample import plot_sample
@@ -12,24 +11,25 @@ import torch
 import os
 
 
-def experiment(dataset):
+def experiment(dataset, elbo_type):
     """ Perform experiment on the dataset
     :param dataset: dataset name
+    :param elbo_type: type of loss function
     """
 
-    # load data and perform training
-    train_loader, valid_loader, input_shape = load_data(dataset)
-    model, train_loss = train_vae(train_loader, input_shape)
-    valid_loss = valid_vae(model, valid_loader)
-
-    # save model and loss
-    model_path = os.path.join(OUTPUT_PATH, "model")
+    # define paths
+    model_path = os.path.join(OUTPUT_PATH, f"model_{elbo_type}")
     if not os.path.isdir(model_path):
         os.mkdir(model_path)
 
-    torch.save(model, os.path.join(model_path, "model.pth"))
-    np.save(os.path.join(model_path, "train_loss.npy"), train_loss)
-    np.save(os.path.join(model_path, "valid_loss.npy"), valid_loss)
+    # load data and perform training
+    train_loader, valid_loader, input_shape = load_data(dataset)
+    model, train_loss, valid_loss = train_vae(train_loader, valid_loader, input_shape, elbo_type)
+
+    # save model and loss
+    torch.save(model, os.path.join(model_path, f"model.pth"))
+    np.save(os.path.join(model_path, f"train_loss.npy"), train_loss)
+    np.save(os.path.join(model_path, f"valid_loss.npy"), valid_loss)
 
 
 def visualize(dataset):
@@ -56,5 +56,4 @@ def visualize(dataset):
 
 
 if __name__ == "__main__":
-    # experiment("mnist")
-    visualize("mnist")
+    experiment("mnist", "l2")
