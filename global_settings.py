@@ -7,7 +7,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # define directories
 DESKTOP_PATH = str(Path(os.getcwd()).parent.absolute())
 if DESKTOP_PATH == "/Users/mingyu/Desktop":
-    DRIVE_PATH = "/Volumes/Sumsung_1T/VAE"
+    DRIVE_PATH = "/Volumes/Sumsung_1T/Projects/VAE"
     DATA_PATH = os.path.join(DRIVE_PATH, "data")
     OUTPUT_PATH = os.path.join(DRIVE_PATH, "output")
 else:

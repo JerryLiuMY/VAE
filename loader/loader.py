@@ -27,3 +27,19 @@ def load_data(dataset):
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Loaded {dataset.upper()} data with input shape {input_size}")
 
     return train_loader, valid_loader, input_size
+
+
+def sort_digits(data_loader):
+    """ Group tensor by digits label
+    :param data_loader: data loader
+    :return: list of image tensors grouped by digits label
+    """
+
+    digits = [[] for _ in range(10)]
+    for valid_batch, label_batch in data_loader:
+        for i in range(valid_batch.size(0)):
+            digits[label_batch[i]].append(valid_batch[i:i + 1])
+        if sum(len(d) for d in digits) >= 1000:
+            break
+
+    return digits

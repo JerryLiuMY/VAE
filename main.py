@@ -1,38 +1,35 @@
 from loader.loader import load_data
-from learning.train import train_vae
+from models.train import train_vae
+from models.train import valid_vae
 from global_settings import OUTPUT_PATH
 from visualization.recon import plot_recon
+from visualization.sample import plot_sample
+from visualization.space import plot_space
+from visualization.inter import plot_inter
+from loader.loader import sort_digits
 import numpy as np
 import torch
 import os
 
 
-def experiment(dataset, model_type, elbo_type, hidden):
+def experiment(dataset):
     """ Perform experiment on the dataset
     :param dataset: dataset name
-    :param model_type: type of model to use
-    :param elbo_type: type of loss function
-    :param hidden: hidden dimension of the latent space
     """
-
-    # define model path
-    model_path = os.path.join(OUTPUT_PATH, f"{model_type}-{elbo_type}")
-    if not os.path.isdir(model_path):
-        os.mkdir(model_path)
-
-    # define hidden path
-    hidden_path = os.path.join(model_path, f"hidden={hidden}")
-    if not os.path.isdir(model_path):
-        os.mkdir(hidden_path)
 
     # load data and perform training
     train_loader, valid_loader, input_shape = load_data(dataset)
-    model, train_loss, valid_loss = train_vae(train_loader, valid_loader, input_shape, model_type, elbo_type, hidden)
+    model, train_loss = train_vae(train_loader, input_shape)
+    valid_loss = valid_vae(model, valid_loader)
 
     # save model and loss
-    torch.save(model, os.path.join(hidden_path, f"model.pth"))
-    np.save(os.path.join(hidden_path, f"train_loss.npy"), train_loss)
-    np.save(os.path.join(hidden_path, f"valid_loss.npy"), valid_loss)
+    model_path = os.path.join(OUTPUT_PATH, "model")
+    if not os.path.isdir(model_path):
+        os.mkdir(model_path)
+
+    torch.save(model, os.path.join(model_path, "model.pth"))
+    np.save(os.path.join(model_path, "train_loss.npy"), train_loss)
+    np.save(os.path.join(model_path, "valid_loss.npy"), valid_loss)
 
 
 def visualize(dataset):
@@ -44,6 +41,7 @@ def visualize(dataset):
     model_path = os.path.join(OUTPUT_PATH, "model")
     model = torch.load(os.path.join(model_path, "model.pth"), map_location=torch.device("cpu"))
     train_loader, valid_loader, input_shape = load_data(dataset)
+    digit_set = sort_digits(valid_loader)
     image_set, labels = next(iter(valid_loader))
 
     # plot visualizations
@@ -52,7 +50,11 @@ def visualize(dataset):
         os.mkdir(visual_path)
 
     plot_recon(model, image_set)
+    plot_inter(model, digit_set, d1=3, d2=9)
+    plot_sample(model)
+    plot_space(model)
 
 
 if __name__ == "__main__":
-    experiment(dataset="mnist", model_type="vae_conv", elbo_type="binary", hidden=3)
+    # experiment("mnist")
+    visualize("mnist")

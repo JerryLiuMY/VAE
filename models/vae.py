@@ -1,32 +1,57 @@
-from params.params import get_conv_size, params_dict
-from torch.nn import functional as F
-from torch import nn as nn
+import torch.nn.functional as F
+from params.params import get_conv_size
+from params.params import params_dict
+import torch.nn as nn
 import torch
 
 
+class VariationalAutoencoder(nn.Module):
+    def __init__(self, input_shape):
+        super(VariationalAutoencoder, self).__init__()
+        self.encoder = Encoder(input_shape)
+        self.decoder = Decoder(input_shape)
+
+    def forward(self, x):
+        mu, logvar = self.encoder(x)
+        latent = self.latent_sample(mu, logvar)
+        x_rec = self.decoder(latent)
+
+        return x_rec, mu, logvar
+
+    def latent_sample(self, mu, logvar):
+        # the re-parameterization trick
+        if self.training:
+            std = logvar.mul(0.5).exp_()
+            eps = torch.empty_like(std).normal_()
+            return eps.mul(std).add_(mu)
+        else:
+            return mu
+
+
 class Block(nn.Module):
-    def __init__(self, input_shape, hidden):
+    def __init__(self, input_shape):
         super(Block, self).__init__()
         self.channel = params_dict["channel"]
         self.kernel_size = params_dict["kernel_size"]
         self.stride = params_dict["stride"]
         self.padding = params_dict["padding"]
         self.dilation = params_dict["dilation"]
-        self.hidden = hidden
+        self.hidden = params_dict["hidden"]
         self.input_h, self.input_w = input_shape
 
 
 class Encoder(Block):
-    def __init__(self, input_shape, hidden):
-        super(Encoder, self).__init__(input_shape, hidden)
+    def __init__(self, input_shape):
+        super(Encoder, self).__init__(input_shape)
+
         # first convolutional layer
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=self.channel, kernel_size=self.kernel_size,
-                               stride=self.stride, padding=self.padding)
+        self.deconv1 = nn.Conv2d(in_channels=1, out_channels=self.channel, kernel_size=self.kernel_size,
+                                 stride=self.stride, padding=self.padding)
         self.conv_h, self.conv_w = get_conv_size(self.input_h), get_conv_size(self.input_w)
 
         # second convolutional layer
-        self.conv2 = nn.Conv2d(in_channels=self.channel, out_channels=self.channel * 2, kernel_size=self.kernel_size,
-                               stride=self.stride, padding=self.padding)
+        self.deconv2 = nn.Conv2d(in_channels=self.channel, out_channels=self.channel * 2, kernel_size=self.kernel_size,
+                                 stride=self.stride, padding=self.padding)
         self.conv_h, self.conv_w = get_conv_size(self.conv_h), get_conv_size(self.conv_w)
 
         # map to mu and variance
@@ -35,8 +60,8 @@ class Encoder(Block):
 
     def forward(self, x):
         # convolution layers
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
+        x = F.relu(self.deconv1(x))
+        x = F.relu(self.deconv2(x))
 
         # flatten to vectors
         x = x.view(x.size(0), -1)
@@ -48,10 +73,9 @@ class Encoder(Block):
         return mu, logvar
 
 
-class DecoderConv(Encoder, Block):
-    def __init__(self, input_shape, hidden):
-        # Kingma & Welling -- Two conv layers
-        super(DecoderConv, self).__init__(input_shape, hidden)
+class Decoder(Encoder, Block):
+    def __init__(self, input_shape):
+        super(Decoder, self).__init__(input_shape)
 
         # linear layer
         self.fc = nn.Linear(in_features=self.hidden, out_features=self.channel * 2 * self.conv_h * self.conv_w)
@@ -74,42 +98,5 @@ class DecoderConv(Encoder, Block):
         # convolution layers
         x = F.relu(self.deconv2(x))
         x = torch.sigmoid(self.deconv1(x))
-
-        return x
-
-
-class DecoderLinear(Encoder, Block):
-    def __init__(self, input_shape, hidden):
-        # Kingma & Welling -- Two linear layers
-        super(DecoderLinear, self).__init__(input_shape, hidden)
-
-        # linear layer
-        self.fc = nn.Linear(
-            in_features=self.hidden,
-            out_features=self.channel * 2 * self.conv_h * self.conv_w
-        )
-
-        # first linear layer
-        self.delinear2 = nn.Linear(
-            in_features=self.channel * 2 * self.conv_h * self.conv_w,
-            out_features=self.channel * self.conv_h * self.conv_w
-        )
-
-        # second linear layer
-        self.delinear1 = nn.Linear(
-            in_features=self.channel * self.conv_h * self.conv_w,
-            out_features=self.conv_h * self.conv_w
-        )
-
-    def forward(self, x):
-        # linear layer
-        x = self.fc(x)
-
-        # convolution layers
-        x = F.relu(self.delinear2(x))
-        x = torch.sigmoid(self.delinear1(x))
-
-        # unflatten to channels
-        x = x.view(x.size(0), 1, self.conv_h, self.conv_w)
 
         return x
