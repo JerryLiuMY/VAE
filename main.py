@@ -15,19 +15,24 @@ def experiment(dataset, model_type, elbo_type, hidden):
     :param hidden: hidden dimension of the latent space
     """
 
-    # define paths
+    # define model path
     model_path = os.path.join(OUTPUT_PATH, f"{model_type}-{elbo_type}")
     if not os.path.isdir(model_path):
         os.mkdir(model_path)
+
+    # define hidden path
+    hidden_path = os.path.join(model_path, f"hidden={hidden}")
+    if not os.path.isdir(model_path):
+        os.mkdir(hidden_path)
 
     # load data and perform training
     train_loader, valid_loader, input_shape = load_data(dataset)
     model, train_loss, valid_loss = train_vae(train_loader, valid_loader, input_shape, model_type, elbo_type, hidden)
 
     # save model and loss
-    torch.save(model, os.path.join(model_path, f"model.pth"))
-    np.save(os.path.join(model_path, f"train_loss.npy"), train_loss)
-    np.save(os.path.join(model_path, f"valid_loss.npy"), valid_loss)
+    torch.save(model, os.path.join(hidden_path, f"model.pth"))
+    np.save(os.path.join(hidden_path, f"train_loss.npy"), train_loss)
+    np.save(os.path.join(hidden_path, f"valid_loss.npy"), valid_loss)
 
 
 def visualize(dataset):
