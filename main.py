@@ -7,11 +7,12 @@ import torch
 import os
 
 
-def experiment(dataset, model_type, elbo_type):
+def experiment(dataset, model_type, elbo_type, hidden):
     """ Perform experiment on the dataset
     :param dataset: dataset name
     :param model_type: type of model to use
     :param elbo_type: type of loss function
+    :param hidden: hidden dimension of the latent space
     """
 
     # define paths
@@ -21,7 +22,7 @@ def experiment(dataset, model_type, elbo_type):
 
     # load data and perform training
     train_loader, valid_loader, input_shape = load_data(dataset)
-    model, train_loss, valid_loss = train_vae(train_loader, valid_loader, input_shape, model_type, elbo_type)
+    model, train_loss, valid_loss = train_vae(train_loader, valid_loader, input_shape, model_type, elbo_type, hidden)
 
     # save model and loss
     torch.save(model, os.path.join(model_path, f"model.pth"))
@@ -49,4 +50,4 @@ def visualize(dataset):
 
 
 if __name__ == "__main__":
-    experiment("mnist", "vae_conv", "binary")
+    experiment(dataset="mnist", model_type="vae_conv", elbo_type="binary", hidden=3)

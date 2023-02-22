@@ -5,20 +5,20 @@ import torch
 
 
 class Block(nn.Module):
-    def __init__(self, input_shape):
+    def __init__(self, input_shape, hidden):
         super(Block, self).__init__()
         self.channel = params_dict["channel"]
         self.kernel_size = params_dict["kernel_size"]
         self.stride = params_dict["stride"]
         self.padding = params_dict["padding"]
         self.dilation = params_dict["dilation"]
-        self.hidden = params_dict["hidden"]
+        self.hidden = hidden
         self.input_h, self.input_w = input_shape
 
 
 class Encoder(Block):
-    def __init__(self, input_shape):
-        super(Encoder, self).__init__(input_shape)
+    def __init__(self, input_shape, hidden):
+        super(Encoder, self).__init__(input_shape, hidden)
         # first convolutional layer
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=self.channel, kernel_size=self.kernel_size,
                                stride=self.stride, padding=self.padding)
@@ -49,9 +49,9 @@ class Encoder(Block):
 
 
 class DecoderConv(Encoder, Block):
-    def __init__(self, input_shape):
+    def __init__(self, input_shape, hidden):
         # Kingma & Welling -- Two conv layers
-        super(DecoderConv, self).__init__(input_shape)
+        super(DecoderConv, self).__init__(input_shape, hidden)
 
         # linear layer
         self.fc = nn.Linear(in_features=self.hidden, out_features=self.channel * 2 * self.conv_h * self.conv_w)
@@ -79,9 +79,9 @@ class DecoderConv(Encoder, Block):
 
 
 class DecoderLinear(Encoder, Block):
-    def __init__(self, input_shape):
+    def __init__(self, input_shape, hidden):
         # Kingma & Welling -- Two linear layers
-        super(DecoderLinear, self).__init__(input_shape)
+        super(DecoderLinear, self).__init__(input_shape, hidden)
 
         # linear layer
         self.fc = nn.Linear(

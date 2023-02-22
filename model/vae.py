@@ -6,15 +6,15 @@ import torch
 
 
 class VariationalAutoencoder(nn.Module):
-    def __init__(self, input_shape, vae_type):
+    def __init__(self, vae_type, input_shape, hidden):
         super(VariationalAutoencoder, self).__init__()
 
         if vae_type == "vae_conv":
-            self.encoder = Encoder(input_shape)
-            self.decoder = DecoderConv(input_shape)
+            self.encoder = Encoder(input_shape, hidden)
+            self.decoder = DecoderConv(input_shape, hidden)
         elif vae_type == "vae_linear":
-            self.encoder = Encoder(input_shape)
-            self.decoder = DecoderLinear(input_shape)
+            self.encoder = Encoder(input_shape, hidden)
+            self.decoder = DecoderLinear(input_shape, hidden)
 
     def forward(self, x):
         # feed-forward function

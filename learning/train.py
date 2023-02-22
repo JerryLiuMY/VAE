@@ -7,13 +7,14 @@ import torch
 import numpy as np
 
 
-def train_vae(train_loader, valid_loader, input_shape, model_type, elbo_type):
+def train_vae(train_loader, valid_loader, input_shape, model_type, elbo_type, hidden):
     """ Training VAE with the specified image dataset
     :param train_loader: training image dataset loader
     :param valid_loader: validation image dataset loader
     :param input_shape: size of input image
     :param model_type: type of model to use
     :param elbo_type: type of elbo function
+    :param hidden: hidden dimension of the latent space
     :return: trained model and training loss history
     """
 
@@ -21,7 +22,7 @@ def train_vae(train_loader, valid_loader, input_shape, model_type, elbo_type):
     epoch, lr, beta = train_dict["epoch"], train_dict["lr"], train_dict["beta"]
 
     # building VAE
-    model = VariationalAutoencoder(input_shape, model_type)
+    model = VariationalAutoencoder(model_type, input_shape, hidden)
     model = model.to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.8)
