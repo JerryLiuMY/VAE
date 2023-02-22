@@ -56,5 +56,5 @@ def visualize(dataset):
 
 
 if __name__ == "__main__":
-    # experiment("mnist")
+    experiment("mnist")
     visualize("mnist")
