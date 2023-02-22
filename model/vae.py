@@ -1,5 +1,6 @@
 from model.enc_dec import Encoder
-from model.enc_dec import DecoderConv, DecoderLinear
+from model.enc_dec import DecoderConv
+from model.enc_dec import DecoderLinear
 import torch.nn as nn
 import torch
 
@@ -16,6 +17,7 @@ class VariationalAutoencoder(nn.Module):
             self.decoder = DecoderLinear(input_shape)
 
     def forward(self, x):
+        # feed-forward function
         mu, logvar = self.encoder(x)
         latent = self.latent_sample(mu, logvar)
         x_rec = self.decoder(latent)
