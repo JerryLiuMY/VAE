@@ -107,23 +107,32 @@ class DecoderLinear(Encoder, Block):
         super(DecoderLinear, self).__init__(input_shape)
 
         # linear layer
-        self.fc = nn.Linear(in_features=self.hidden, out_features=self.channel * 2 * self.conv_h * self.conv_w)
+        self.fc = nn.Linear(
+            in_features=self.hidden,
+            out_features=self.channel * 2 * self.conv_h * self.conv_w
+        )
 
         # first linear layer
-        self.delinear2 = nn.Linear(in_features=self.hidden, out_features=self.channel * 2 * self.conv_h * self.conv_w)
+        self.delinear2 = nn.Linear(
+            in_features=self.channel * 2 * self.conv_h * self.conv_w,
+            out_features=self.channel * self.conv_h * self.conv_w
+        )
 
         # second linear layer
-        self.delinear1 = nn.Linear(in_features=self.hidden, out_features=self.channel * 2 * self.conv_h * self.conv_w)
+        self.delinear1 = nn.Linear(
+            in_features=self.channel * self.conv_h * self.conv_w,
+            out_features=self.conv_h * self.conv_w
+        )
 
     def forward(self, x):
         # linear layer
         x = self.fc(x)
 
-        # unflatten to channels
-        x = x.view(x.size(0), self.channel * 2, self.conv_h, self.conv_w)
-
         # convolution layers
-        x = F.relu(self.conv2(x))
+        x = F.relu(self.delinear2(x))
         x = torch.sigmoid(self.delinear1(x))
+
+        # unflatten to channels
+        x = x.view(x.size(0), 1, self.conv_h, self.conv_w)
 
         return x
