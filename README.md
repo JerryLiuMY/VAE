@@ -11,8 +11,8 @@ Dictionary of parameters: https://github.com/JerryLiuMY/VAE/blob/main/params/par
 
 ```python
 from loader.loader import load_data
-from models.train import train_vae
-from models.train import valid_vae
+from learning.train import train_vae
+from learning.train import valid_vae
 
 # load data and perform training & validation
 dataset = "mnist"

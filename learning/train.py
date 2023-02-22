@@ -1,5 +1,5 @@
-from models.elbo import elbo_binary, elbo_l2
-from vae.vae import VariationalAutoencoder
+from learning.elbo import elbo_binary, elbo_l2
+from model.vae import VariationalAutoencoder
 from params.params import train_dict
 from global_settings import device
 from datetime import datetime
@@ -20,7 +20,7 @@ def train_vae(train_loader, valid_loader, input_shape, elbo_type):
     epoch, lr, beta = train_dict["epoch"], train_dict["lr"], train_dict["beta"]
 
     # building VAE
-    model = VariationalAutoencoder(input_shape)
+    model = VariationalAutoencoder(input_shape, decoder_type)
     model = model.to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.8)

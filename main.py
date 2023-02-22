@@ -1,5 +1,5 @@
 from loader.loader import load_data
-from models.train import train_vae
+from learning.train import train_vae
 from global_settings import OUTPUT_PATH
 from visualization.recon import plot_recon
 from visualization.inter import plot_inter

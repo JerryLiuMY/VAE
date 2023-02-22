@@ -1,31 +1,7 @@
-import torch.nn.functional as F
-from params.params import get_conv_size
-from params.params import params_dict
-import torch.nn as nn
+from params.params import get_conv_size, params_dict
+from torch.nn import functional as F
+from torch import nn as nn
 import torch
-
-
-class VariationalAutoencoder(nn.Module):
-    def __init__(self, input_shape):
-        super(VariationalAutoencoder, self).__init__()
-        self.encoder = Encoder(input_shape)
-        self.decoder = DecoderConv(input_shape)
-
-    def forward(self, x):
-        mu, logvar = self.encoder(x)
-        latent = self.latent_sample(mu, logvar)
-        x_rec = self.decoder(latent)
-
-        return x_rec, mu, logvar
-
-    def latent_sample(self, mu, logvar):
-        # the re-parameterization trick
-        if self.training:
-            std = logvar.mul(0.5).exp_()
-            eps = torch.empty_like(std).normal_()
-            return eps.mul(std).add_(mu)
-        else:
-            return mu
 
 
 class Block(nn.Module):
@@ -43,7 +19,6 @@ class Block(nn.Module):
 class Encoder(Block):
     def __init__(self, input_shape):
         super(Encoder, self).__init__(input_shape)
-
         # first convolutional layer
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=self.channel, kernel_size=self.kernel_size,
                                stride=self.stride, padding=self.padding)
@@ -75,6 +50,7 @@ class Encoder(Block):
 
 class DecoderConv(Encoder, Block):
     def __init__(self, input_shape):
+        # Kingma & Welling -- Two conv layers
         super(DecoderConv, self).__init__(input_shape)
 
         # linear layer
@@ -104,6 +80,7 @@ class DecoderConv(Encoder, Block):
 
 class DecoderLinear(Encoder, Block):
     def __init__(self, input_shape):
+        # Kingma & Welling -- Two linear layers
         super(DecoderLinear, self).__init__(input_shape)
 
         # linear layer
