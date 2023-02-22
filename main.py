@@ -21,7 +21,7 @@ def experiment(dataset):
     model_path = os.path.join(OUTPUT_PATH, "model")
     if not os.path.isdir(model_path):
         os.mkdir(model_path)
-    
+
     # load data and perform training
     train_loader, valid_loader, input_shape = load_data(dataset)
     model, train_loss = train_vae(train_loader, input_shape)
