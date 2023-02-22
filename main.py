@@ -2,7 +2,6 @@ from loader.loader import load_data
 from models.train import train_vae
 from global_settings import OUTPUT_PATH
 from visualization.recon import plot_recon
-from visualization.sample import plot_sample
 from visualization.space import plot_space
 from visualization.inter import plot_inter
 from loader.loader import sort_digits
@@ -51,7 +50,6 @@ def visualize(dataset):
 
     plot_recon(model, image_set)
     plot_inter(model, digit_set, d1=3, d2=9)
-    plot_sample(model)
     plot_space(model)
 
 
