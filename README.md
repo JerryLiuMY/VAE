@@ -24,7 +24,6 @@ valid_loss = valid_vae(model, valid_loader)
 ```python
 from loader.loader import sort_digits
 from visualization.recon import plot_recon
-from visualization.inter import plot_inter
 
 # create sample images
 digit_set = sort_digits(valid_loader)
@@ -32,7 +31,6 @@ image_set, labels = next(iter(valid_loader))
 
 # plot various visualizations
 plot_recon(model, image_set)
-plot_inter(model, digit_set, d1=3, d2=9)
 ```
 
 ## Demo

@@ -2,7 +2,6 @@ from loader.loader import load_data
 from learning.train import train_vae
 from global_settings import OUTPUT_PATH
 from visualization.recon import plot_recon
-from visualization.inter import plot_inter
 from loader.loader import sort_digits
 import numpy as np
 import torch
@@ -49,7 +48,6 @@ def visualize(dataset):
         os.mkdir(visual_path)
 
     plot_recon(model, image_set)
-    plot_inter(model, digit_set, d1=3, d2=9)
 
 
 if __name__ == "__main__":
