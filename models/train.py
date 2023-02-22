@@ -1,5 +1,5 @@
 from models.elbo import elbo_binary, elbo_l2
-from models.vae import VariationalAutoencoder
+from vae.vae import VariationalAutoencoder
 from params.params import train_dict
 from global_settings import device
 from datetime import datetime
