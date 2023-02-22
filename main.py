@@ -2,7 +2,6 @@ from loader.loader import load_data
 from learning.train import train_vae
 from global_settings import OUTPUT_PATH
 from visualization.recon import plot_recon
-from loader.loader import sort_digits
 import numpy as np
 import torch
 import os
@@ -39,7 +38,6 @@ def visualize(dataset):
     model_path = os.path.join(OUTPUT_PATH, "model")
     model = torch.load(os.path.join(model_path, "model.pth"), map_location=torch.device("cpu"))
     train_loader, valid_loader, input_shape = load_data(dataset)
-    digit_set = sort_digits(valid_loader)
     image_set, labels = next(iter(valid_loader))
 
     # plot visualizations

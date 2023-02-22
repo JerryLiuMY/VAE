@@ -22,11 +22,9 @@ valid_loss = valid_vae(model, valid_loader)
 ```
 
 ```python
-from loader.loader import sort_digits
 from visualization.recon import plot_recon
 
 # create sample images
-digit_set = sort_digits(valid_loader)
 image_set, labels = next(iter(valid_loader))
 
 # plot various visualizations
