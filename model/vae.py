@@ -9,10 +9,10 @@ class VariationalAutoencoder(nn.Module):
     def __init__(self, input_shape, vae_type):
         super(VariationalAutoencoder, self).__init__()
 
-        if vae_type == "conv":
+        if vae_type == "vae_conv":
             self.encoder = Encoder(input_shape)
             self.decoder = DecoderConv(input_shape)
-        elif vae_type == "linear":
+        elif vae_type == "vae_linear":
             self.encoder = Encoder(input_shape)
             self.decoder = DecoderLinear(input_shape)
 

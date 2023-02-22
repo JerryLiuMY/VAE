@@ -9,20 +9,21 @@ import torch
 import os
 
 
-def experiment(dataset, elbo_type):
+def experiment(dataset, model_type, elbo_type):
     """ Perform experiment on the dataset
     :param dataset: dataset name
+    :param model_type: type of model to use
     :param elbo_type: type of loss function
     """
 
     # define paths
-    model_path = os.path.join(OUTPUT_PATH, f"model_{elbo_type}")
+    model_path = os.path.join(OUTPUT_PATH, f"{model_type}-{elbo_type}")
     if not os.path.isdir(model_path):
         os.mkdir(model_path)
 
     # load data and perform training
     train_loader, valid_loader, input_shape = load_data(dataset)
-    model, train_loss, valid_loss = train_vae(train_loader, valid_loader, input_shape, elbo_type)
+    model, train_loss, valid_loss = train_vae(train_loader, valid_loader, input_shape, model_type, elbo_type)
 
     # save model and loss
     torch.save(model, os.path.join(model_path, f"model.pth"))
@@ -52,4 +53,4 @@ def visualize(dataset):
 
 
 if __name__ == "__main__":
-    experiment("mnist", "l2")
+    experiment("mnist", "vae_conv", "binary")
