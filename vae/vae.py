@@ -110,12 +110,10 @@ class DecoderLinear(Encoder, Block):
         self.fc = nn.Linear(in_features=self.hidden, out_features=self.channel * 2 * self.conv_h * self.conv_w)
 
         # first linear layer
-        self.delinear2 = nn.ConvTranspose2d(in_channels=self.channel * 2, out_channels=self.channel,
-                                            kernel_size=self.kernel_size, stride=self.stride, padding=self.padding)
+        self.delinear2 = nn.Linear(in_features=self.hidden, out_features=self.channel * 2 * self.conv_h * self.conv_w)
 
         # second linear layer
-        self.delinear1 = nn.ConvTranspose2d(in_channels=self.channel, out_channels=1,
-                                            kernel_size=self.kernel_size, stride=self.stride, padding=self.padding)
+        self.delinear1 = nn.Linear(in_features=self.hidden, out_features=self.channel * 2 * self.conv_h * self.conv_w)
 
     def forward(self, x):
         # linear layer
